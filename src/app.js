@@ -2,16 +2,22 @@ import Fastify from "fastify";
 import fs from "node:fs";
 import path from "node:path";
 
-const app = Fastify();
-
-app.get("/", async (request, reply) => {
-  const htmlPath = path.join(process.cwd(), "public", "index.html");
-  const html = fs.readFileSync(htmlPath, "utf-8");
-
-  reply.type("text/html").send(html);
+const app = Fastify({
+  logger: true
 });
 
-export default async function handler(req, res) {
-  await app.ready();
-  app.server.emit("request", req, res);
-}
+app.get("/", async (_request, reply) => {
+  const htmlPath = path.join(process.cwd(), "public", "index.html");
+  const html = await fs.promises.readFile(htmlPath, "utf8");
+
+  return reply
+    .type("text/html; charset=utf-8")
+    .send(html);
+});
+
+app.get("/favicon.ico", async (_request, reply) => {
+  return reply.code(204).send();
+});
+
+// A Vercel precisa receber o servidor Fastify diretamente.
+export default app;
