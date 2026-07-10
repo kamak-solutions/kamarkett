@@ -1,23 +1,32 @@
 import Fastify from "fastify";
-import fs from "node:fs";
+import fastifyStatic from "@fastify/static";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const app = Fastify({
   logger: true
 });
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+await app.register(fastifyStatic, {
+  root: path.join(__dirname, "..", "public"),
+  prefix: "/"
+});
+
 app.get("/", async (_request, reply) => {
-  const htmlPath = path.join(process.cwd(), "public", "index.html");
-  const html = await fs.promises.readFile(htmlPath, "utf8");
-
-  return reply
-    .type("text/html; charset=utf-8")
-    .send(html);
+  return reply.sendFile("index.html");
 });
 
-app.get("/favicon.ico", async (_request, reply) => {
-  return reply.code(204).send();
+app.get("/health", async () => {
+  return {
+    status: "ok",
+    projeto: "Kamarkett"
+  };
 });
 
-// A Vercel precisa receber o servidor Fastify diretamente.
-export default app;
+app.listen({
+  port: Number(process.env.PORT) || 3000,
+  host: "0.0.0.0"
+});
