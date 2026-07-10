@@ -2,18 +2,17 @@
   "name": "kamarkett-fastify-vercel",
   "version": "1.0.0",
   "description": "Exemplo Kamarkett com Node.js, Fastify e Vercel",
+  
   "type": "module",
   "scripts": {
-    "dev": "node server.js",
-    "start": "node server.js"
+    "dev": "node src/app.js"
   },
   "dependencies": {
-    "@fastify/static": "latest",
-    "fastify": "latest"
+    "fastify": "^5.0.0"
   },
-  
   "engines": {
     "node": "20.x"
   }
+
 }
 

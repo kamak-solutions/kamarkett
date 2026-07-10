@@ -1,24 +1,17 @@
-import Fastify from 'fastify';
-import fastifyStatic from '@fastify/static';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import Fastify from "fastify";
+import fs from "node:fs";
+import path from "node:path";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const publicDir = path.join(__dirname, '..', 'public');
+const app = Fastify();
 
-export function buildApp(options = {}) {
-  const app = Fastify(options);
+app.get("/", async (request, reply) => {
+  const htmlPath = path.join(process.cwd(), "public", "index.html");
+  const html = fs.readFileSync(htmlPath, "utf-8");
 
-  app.register(fastifyStatic, {
-    root: publicDir,
-    prefix: '/',
-  });
+  reply.type("text/html").send(html);
+});
 
-  // Rota única principal para servir a página do marketplace
-  app.get('/', async (request, reply) => {
-    return reply.sendFile('index.html');
-  });
-
-  return app;
+export default async function handler(req, res) {
+  await app.ready();
+  app.server.emit("request", req, res);
 }
