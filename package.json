@@ -11,7 +11,9 @@
     "@fastify/static": "latest",
     "fastify": "latest"
   },
+  
   "engines": {
-    "node": ">=20"
+    "node": "20.x"
   }
 }
+
